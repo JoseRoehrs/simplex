@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { LPModel } from '../core/types';
 import { PROBLEMS, WEEKS, problemsOfWeek, type Week } from '../core/problems';
 import {
@@ -153,6 +153,7 @@ function ResultStrip({ trace }: { trace: FlowTrace }) {
 
 function Canvas({ trace }: { trace: FlowTrace | null }) {
   const [zoom, setZoom] = useState(0.7);
+  const [fullscreen, setFullscreen] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const drag = useRef<{ x: number; y: number; sl: number; st: number } | null>(null);
 
@@ -179,8 +180,35 @@ function Canvas({ trace }: { trace: FlowTrace | null }) {
     return m;
   }, []);
 
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setFullscreen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [fullscreen]);
+
+  // Ao resolver, traz o CAMINHO ACESO para o centro da viewport — antes ele podia
+  // acender fora da área visível do canvas pannável e o aluno não percebia. Só rola
+  // quando chega um trace novo (não a cada zoom). Lê posições de FLOW_NODES (estáticas).
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !trace) return;
+    const active = FLOW_NODES.filter((n) => trace.activeNodes.has(n.id));
+    if (!active.length) return;
+    const cx = (Math.min(...active.map((n) => n.x)) + Math.max(...active.map((n) => n.x + NODE_W))) / 2;
+    const cy = (Math.min(...active.map((n) => n.y)) + Math.max(...active.map((n) => n.y + NODE_H))) / 2;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollTo({
+      left: Math.max(0, cx * zoom - el.clientWidth / 2),
+      top: Math.max(0, cy * zoom - el.clientHeight / 2),
+      behavior: reduce ? 'auto' : 'smooth',
+    });
+    // Intencional: depende só de `trace` (rola ao resolver, não ao mudar o zoom).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trace]);
+
   return (
-    <div className="wf-canvas-wrap">
+    <div className={`wf-canvas-wrap${fullscreen ? ' fullscreen' : ''}`}>
       <div className="wf-zoom">
         <button className="chip" onClick={() => setZoom((z) => Math.max(0.4, +(z - 0.1).toFixed(2)))}>
           −
@@ -188,6 +216,13 @@ function Canvas({ trace }: { trace: FlowTrace | null }) {
         <span className="wf-zoom-val">{Math.round(zoom * 100)}%</span>
         <button className="chip" onClick={() => setZoom((z) => Math.min(1.3, +(z + 0.1).toFixed(2)))}>
           +
+        </button>
+        <button
+          className="chip wf-fullscreen-btn"
+          onClick={() => setFullscreen((f) => !f)}
+          title={fullscreen ? 'Sair da tela cheia (Esc)' : 'Tela cheia'}
+        >
+          {fullscreen ? '✕ Fechar' : '⛶ Tela cheia'}
         </button>
         <span className="wf-hint">arraste para mover</span>
       </div>

@@ -766,6 +766,25 @@ textarea {
   background: var(--bg-2);
 }
 
+.wf-canvas-wrap.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  border-radius: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.wf-canvas-wrap.fullscreen .wf-canvas {
+  flex: 1;
+  height: auto;
+}
+
+.wf-fullscreen-btn {
+  margin-left: 4px;
+}
+
 .wf-zoom {
   display: flex;
   align-items: center;
