@@ -1,0 +1,83 @@
+/* ============================================================
+   SIMPLEX QUEST — estilos específicos do jogo
+   (complementa css/styles.css · alinhado ao design system v3)
+   ============================================================ */
+
+/* HUD na topbar (clara) */
+.hud { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.hud-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  padding: 6px 12px; border-radius: 999px; font-weight: 600; color: var(--ink); font-size: 13px; white-space: nowrap;
+}
+.hud-item .icon { width: 15px; height: 15px; }
+.hud-item.lvl { background: linear-gradient(135deg, var(--primary-2), var(--primary)); border: 0; color: #fff; font-weight: 700; }
+@media (max-width: 720px) { .hud-item.lvl { display: none; } }
+
+#app { animation: fade .35s cubic-bezier(.2,.7,.2,1); }
+.screen-head { margin-bottom: 18px; }
+.screen-head h2 { margin-bottom: 6px; }
+
+/* painel de perguntas do solver */
+.qpanel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px 22px; box-shadow: var(--sh-1); margin-top: 16px;
+}
+.qp-q { font-size: 17px; font-weight: 600; margin-bottom: 8px; color: var(--ink); letter-spacing: -.01em; }
+.qp-hint {
+  font-size: 13.5px; color: var(--ink-soft); background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; display: inline-block; margin-bottom: 4px;
+}
+.qp-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+/* botões de escolha grandes (modo 1 e chooser) */
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 760px) { .choices { grid-template-columns: 1fr; } }
+.choice {
+  text-align: left; cursor: pointer; font-family: inherit; background: #fff;
+  border: 2px solid var(--line-strong); border-radius: var(--radius); padding: 17px 19px;
+  transition: border-color .16s, box-shadow .16s, background-color .16s, transform .16s;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.choice:hover { border-color: var(--primary); box-shadow: var(--sh-2); transform: translateY(-2px); }
+.choice:focus-visible { outline: 3px solid var(--primary-2); outline-offset: 2px; }
+.choice b { font-size: 16px; color: var(--ink); letter-spacing: -.01em; }
+.choice small { color: var(--ink-soft); font-size: 13.5px; line-height: 1.45; }
+.choice.sel-ok { border-color: var(--green); background: var(--green-l); }
+.choice.sel-no { border-color: var(--rose); background: var(--rose-l); }
+.choice.sel-correct { border-color: var(--green); box-shadow: inset 0 0 0 2px var(--green-l); }
+
+/* feedback */
+.feedbox { margin-top: 16px; }
+.feedbox.good { border: 1px solid var(--green); background: var(--green-l); }
+.feedbox.bad  { border: 1px solid var(--rose);  background: var(--rose-l); }
+.fb-t { font-weight: 700; font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.fb-t .icon { width: 19px; height: 19px; }
+.fb-b { font-size: 14.5px; margin-bottom: 14px; color: var(--ink-soft); }
+.fb-b sub { font-size: .75em; }
+
+/* tableau interativo (clicável) */
+table.tableau th.pick, table.tableau td.rowhead.pick { cursor: pointer; transition: background-color .14s, color .14s; }
+table.tableau th.pick:hover { background: var(--primary) !important; color: #fff; }
+table.tableau td.rowhead.pick:hover { background: var(--primary); color: #fff; }
+table.tableau td.rowhead { background: #f7faff; font-weight: 700; color: var(--primary-d); font-family: var(--font); }
+.sw.art-sw { background: #cdd2ec; opacity: .5; }
+.sw.col-sw { background: #dbe6fe; }
+.sw.row-sw { background: #fdf0db; }
+.sw.piv-sw { background: var(--primary); }
+
+/* telas de resultado */
+.stars { color: var(--amber); margin: 4px 0 12px; display: flex; gap: 6px; justify-content: center; }
+.stars .icon { width: 34px; height: 34px; }
+.result-vals { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; margin: 10px 0 18px; font-weight: 600; color: var(--ink-soft); }
+.result-vals .n { font-size: 30px; color: var(--primary-d); display: block; line-height: 1.1; font-family: var(--mono); }
+
+/* cartões de modo */
+.mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+@media (max-width: 880px) { .mode-grid { grid-template-columns: 1fr; } }
+.mode-card { cursor: pointer; }
+.mode-card:focus-visible { outline: 3px solid var(--primary-2); outline-offset: 3px; }
+
+/* topbar do jogo: voltar ao site */
+.topbar .nav a.back { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:10px; font-size:14px; font-weight:500; text-decoration:none; color:var(--ink-soft); transition: background-color .15s, color .15s; }
+.topbar .nav a.back:hover { background: var(--surface-2); color: var(--ink); }

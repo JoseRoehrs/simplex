@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simplex Quest · Aprenda Simplex e Duas Fases jogando</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/jogo.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d4ed8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M18 7V4H6l6 8-6 8h12v-3'/></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <span class="logo"><svg class="icon"><use href="#i-gamepad"></use></svg></span>
+        <span>Simplex Quest<small>Método Simplex · Duas Fases</small></span>
+      </div>
+      <div class="nav">
+        <button data-nav="home"><svg class="icon"><use href="#i-home"></use></svg> Início</button>
+        <a href="index.html" class="back"><svg class="icon"><use href="#i-arrow-left"></use></svg> Voltar ao site</a>
+      </div>
+      <div class="hud" id="hud"></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="app"></div>
+    <noscript><p>Este jogo precisa de JavaScript habilitado.</p></noscript>
+  </main>
+
+  <script src="js/icons.js"></script>
+  <script src="js/simplex.js"></script>
+  <script src="js/problems.js"></script>
+  <script src="js/jogo.js"></script>
+</body>
+</html>

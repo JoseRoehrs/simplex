@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simplex em Duas Fases — Aprenda passo a passo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M18 7V4H6l6 8-6 8h12v-3'/></svg>">
+</head>
+<body>
+
+<!-- ============ SPRITE DE ÍCONES (SVG, sem emoji) ============ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <symbol id="i-sigma" viewBox="0 0 24 24"><path d="M18 7V4H6l6 8-6 8h12v-3"/></symbol>
+  <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="i-workflow" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
+  <symbol id="i-calculator" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-dices" viewBox="0 0 24 24"><rect width="12" height="12" x="2" y="10" rx="2"/><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/><path d="M6 18h.01"/><path d="M10 14h.01"/><path d="M15 6h.01"/><path d="M18 9h.01"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M21.42 10.92a1 1 0 0 0-.02-1.84L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+  <symbol id="i-infinity" viewBox="0 0 24 24"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-5.997.142 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.142 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.98L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-pointer" viewBox="0 0 24 24"><path d="M4.04 4.69a.5.5 0 0 1 .65-.65l16 6.5a.5.5 0 0 1-.06.95l-6.12 1.58a2 2 0 0 0-1.44 1.43l-1.58 6.13a.5.5 0 0 1-.95.06z"/></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+</svg>
+
+<!-- ============ TOPO ============ -->
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo"><svg class="icon"><use href="#i-sigma"></use></svg></div>
+      <div>Simplex em Duas Fases<small>Laboratório interativo de Pesquisa Operacional</small></div>
+    </div>
+    <nav class="nav" aria-label="Navegação principal">
+      <button data-go="inicio" class="active"><svg class="icon"><use href="#i-cap"></use></svg> Início</button>
+      <button data-go="teoria"><svg class="icon"><use href="#i-book-open"></use></svg> Teoria</button>
+      <button data-go="workflow"><svg class="icon"><use href="#i-workflow"></use></svg> Workflow</button>
+      <button data-go="colinha"><svg class="icon"><use href="#i-clipboard"></use></svg> Colinha</button>
+      <button data-go="resolver"><svg class="icon"><use href="#i-calculator"></use></svg> Resolver</button>
+      <button data-go="quiz"><svg class="icon"><use href="#i-help"></use></svg> Quiz</button>
+      <a href="jogo.html" style="margin-left:6px;padding:9px 15px;border-radius:9px;font-size:13.5px;font-weight:700;text-decoration:none;color:#08111f;background:linear-gradient(135deg,var(--primary-2),var(--teal));box-shadow:var(--sh-glow);display:inline-flex;align-items:center;gap:7px;"><svg class="icon"><use href="#i-gamepad"></use></svg> Jogo</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- ============ INÍCIO ============ -->
+<section id="inicio" class="section active">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow"><svg class="icon"><use href="#i-sigma"></use></svg> Pesquisa Operacional · passo a passo</span>
+        <h1>Domine o Método Simplex <br class="br-d"><span class="grad">de Duas Fases</span></h1>
+        <p>Aprenda Programação Linear de verdade: teoria intuitiva, fluxograma, colinha e um <b>resolvedor que mostra cada quadro</b> da Fase&nbsp;1 e da Fase&nbsp;2 — com os problemas dos seus exercícios já resolvidos.</p>
+        <div class="cta">
+          <button class="btn btn-light" data-go="resolver">Resolver os problemas <svg class="icon"><use href="#i-play"></use></svg></button>
+          <button class="btn btn-ghost" data-go="teoria">Começar pela teoria <svg class="icon"><use href="#i-arrow-right"></use></svg></button>
+        </div>
+        <div class="chips">
+          <span class="chip"><svg class="icon"><use href="#i-book-open"></use></svg> Material de ensino</span>
+          <span class="chip"><svg class="icon"><use href="#i-clipboard"></use></svg> Colinha imprimível</span>
+          <span class="chip"><svg class="icon"><use href="#i-help"></use></svg> Quizzes &amp; jogo</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="preview-card">
+          <div class="pc-top">
+            <span class="pc-dot"></span><span class="pc-dot"></span><span class="pc-dot"></span>
+            <span class="pc-title">Quadro · Fase 2</span>
+            <span class="badge f2" style="margin-left:auto">ótimo</span>
+          </div>
+          <table class="pc-tbl">
+            <thead><tr><th>Base</th><th>x₁</th><th class="hl-col">x₂</th><th>x₃</th><th>b</th></tr></thead>
+            <tbody>
+              <tr><td>f₁</td><td>1</td><td class="hl-col">0</td><td>2</td><td>40</td></tr>
+              <tr class="hl-row"><td>x₂</td><td>½</td><td class="hl-cell">1</td><td>3</td><td>6</td></tr>
+              <tr class="zr"><td>Z</td><td>−2</td><td class="hl-col">0</td><td>−4</td><td></td></tr>
+            </tbody>
+          </table>
+          <div class="pc-foot"><span>Z* = 60</span><span class="pc-chip"><svg class="icon"><use href="#i-check-circle"></use></svg> solução ótima</span></div>
+        </div>
+        <div class="hero-orbit one">Fase 1 · w = 0</div>
+        <div class="hero-orbit two">pivô</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-head">
+    <span class="eyebrow alt"><svg class="icon"><use href="#i-sparkles"></use></svg> Tudo em um só lugar</span>
+    <h2>Como este laboratório funciona</h2>
+  </div>
+  <div class="grid cols-3 features">
+    <div class="card feature"><div class="ic"><svg class="icon icon-lg"><use href="#i-book-open"></use></svg></div><h3>Teoria intuitiva</h3><p class="sub mb0">Forma padrão, variáveis de folga/excesso/artificiais e o porquê das duas fases — explicado do zero.</p></div>
+    <div class="card feature"><div class="ic"><svg class="icon icon-lg"><use href="#i-workflow"></use></svg></div><h3>Workflow visual</h3><p class="sub mb0">Um fluxograma que guia cada decisão: quem entra, quem sai, quando parar.</p></div>
+    <div class="card feature"><div class="ic"><svg class="icon icon-lg"><use href="#i-clipboard"></use></svg></div><h3>Colinha</h3><p class="sub mb0">Regras essenciais em um cartão de bolso que você pode imprimir antes da prova.</p></div>
+    <div class="card feature"><div class="ic"><svg class="icon icon-lg"><use href="#i-calculator"></use></svg></div><h3>Resolvedor</h3><p class="sub mb0">Mostra <b>todos os quadros</b> com a coluna pivô, o teste da razão e a linha de decisão.</p></div>
+    <div class="card feature"><div class="ic"><svg class="icon icon-lg"><use href="#i-dices"></use></svg></div><h3>Gerador</h3><p class="sub mb0">Crie problemas aleatórios (sempre exigindo duas fases) e resolva para praticar.</p></div>
+    <div class="card feature"><div class="ic"><svg class="icon icon-lg"><use href="#i-help"></use></svg></div><h3>Quiz</h3><p class="sub mb0">Questões com feedback explicado para fixar cada conceito.</p></div>
+  </div>
+
+  <h2 style="margin:38px 0 16px" class="h2icon"><svg class="icon"><use href="#i-clipboard"></use></svg> O exercício (do enunciado)</h2>
+  <div class="card pad-lg">
+    <p><b>1. Resolva os problemas de programação linear (PPL) evidenciando os passos:</b></p>
+    <ol style="margin:0 0 18px; padding-left:20px">
+      <li><b>(I)</b> Escrever o problema de forma a resolvê-lo pelo método simplex.</li>
+      <li><b>(II)</b> Resolver a <b>primeira fase</b> do método simplex.</li>
+      <li><b>(III)</b> Resolver a <b>segunda fase</b> do método simplex.</li>
+      <li><b>(IV)</b> Descrever o resultado obtido, conferindo-o com o modelo original.</li>
+    </ol>
+    <div class="grid cols-2">
+      <div class="card" style="background:var(--surface-2)">
+        <span class="badge gray">a) (SILVA)</span>
+        <div class="formula" style="margin-top:12px">
+          <div class="ln"><span class="op">Maximizar</span> Z = x<sub>1</sub> + 2x<sub>2</sub> + x<sub>3</sub></div>
+          <div class="ln">sujeito a&nbsp;&nbsp; 2x<sub>1</sub> + 3x<sub>2</sub> + x<sub>3</sub> <span class="op">≥</span> 10</div>
+          <div class="ln"><span style="opacity:0">sujeito a</span>&nbsp;&nbsp; 4x<sub>1</sub> + x<sub>2</sub> + 2x<sub>3</sub> <span class="op">≥</span> 20</div>
+          <div class="ln"><span style="opacity:0">sujeito a</span>&nbsp;&nbsp; x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub> <span class="op">≥</span> 0</div>
+        </div>
+      </div>
+      <div class="card" style="background:var(--surface-2)">
+        <span class="badge gray">b) (SILVA)</span>
+        <div class="formula" style="margin-top:12px">
+          <div class="ln"><span class="op">Minimizar</span> Z = 2x<sub>1</sub> + 4x<sub>2</sub> + 10x<sub>3</sub></div>
+          <div class="ln">sujeito a&nbsp;&nbsp; x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> <span class="op">≤</span> 120</div>
+          <div class="ln"><span style="opacity:0">sujeito a</span>&nbsp;&nbsp; x<sub>1</sub> + 2x<sub>2</sub> + 5x<sub>3</sub> <span class="op">≥</span> 30</div>
+          <div class="ln"><span style="opacity:0">sujeito a</span>&nbsp;&nbsp; x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub> <span class="op">≥</span> 0</div>
+        </div>
+      </div>
+    </div>
+    <div class="tac" style="margin-top:20px">
+      <button class="btn btn-primary" data-go="resolver">Ver a resolução completa de A e B <svg class="icon"><use href="#i-play"></use></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEORIA ============ -->
+<section id="teoria" class="section">
+  <div class="lesson-grid">
+    <aside class="card no-print toc">
+      <div class="kicker">Sumário</div>
+      <a href="#t1">1. Programação Linear</a>
+      <a href="#t2">2. Forma padrão</a>
+      <a href="#t3">3. Folga, excesso e artificiais</a>
+      <a href="#t4">4. Por que duas fases?</a>
+      <a href="#t5">5. Anatomia do quadro</a>
+      <a href="#t6">6. FASE 1 detalhada</a>
+      <a href="#t7">7. FASE 2 detalhada</a>
+      <a href="#t8">8. Lendo o resultado</a>
+    </aside>
+
+    <div class="lesson">
+      <h2 id="t1">1. O que é Programação Linear?</h2>
+      <p>A <b>Programação Linear (PL)</b> busca o <b>melhor valor</b> (máximo ou mínimo) de uma função linear — a <b>função objetivo Z</b> — respeitando um conjunto de <b>restrições lineares</b> e a condição de <b>não-negatividade</b> das variáveis.</p>
+      <div class="callout info"><div class="t"><svg class="icon"><use href="#i-target"></use></svg> Ideia central</div>As restrições formam uma região (um poliedro). O ótimo, quando existe, está sempre em um <b>vértice</b> dessa região. O <b>Simplex</b> é um método inteligente para "caminhar" de vértice em vértice, sempre melhorando Z, até não dar mais.</div>
+
+      <h3 id="t2">2. Forma padrão</h3>
+      <p>O Simplex trabalha com <b>igualdades</b> e <b>variáveis ≥ 0</b>. Por isso o primeiro passo (o <b>Passo I</b> do seu exercício) é reescrever todas as desigualdades como igualdades, adicionando variáveis auxiliares.</p>
+      <div class="formula">
+        <div class="ln">Original:&nbsp; a<sub>1</sub>x<sub>1</sub> + a<sub>2</sub>x<sub>2</sub> + … <span class="op">≤ / ≥ / =</span> b&nbsp;&nbsp;(com b ≥ 0)</div>
+        <div class="ln">Padrão:&nbsp;&nbsp; a<sub>1</sub>x<sub>1</sub> + a<sub>2</sub>x<sub>2</sub> + … <span class="op">±</span> auxiliares <span class="op">=</span> b</div>
+      </div>
+      <div class="callout warn"><div class="t"><svg class="icon"><use href="#i-warn"></use></svg> Regra do b ≥ 0</div>Se algum lado direito <b>b</b> for negativo, multiplique a restrição inteira por <b>−1</b> (isso <b>inverte</b> o sinal da desigualdade) antes de padronizar.</div>
+
+      <h3 id="t3">3. Folga, excesso e artificiais</h3>
+      <table class="deftable">
+        <thead><tr><th>Tipo de restrição</th><th>O que adicionar</th><th>Serve de base?</th></tr></thead>
+        <tbody>
+          <tr><td><b>≤</b> b</td><td>+ variável de <b>folga</b> (f) &nbsp;<span class="badge gray">+1</span></td><td>Sim — já é uma base viável</td></tr>
+          <tr><td><b>≥</b> b</td><td>− <b>excesso</b> (e) <span class="badge gray">−1</span> &nbsp;e&nbsp; + <b>artificial</b> (a) <span class="badge gray">+1</span></td><td>O excesso entra com −1, então <b>precisa</b> da artificial</td></tr>
+          <tr><td><b>=</b> b</td><td>+ variável <b>artificial</b> (a) <span class="badge gray">+1</span></td><td>Só a artificial serve de base</td></tr>
+        </tbody>
+      </table>
+      <div class="grid cols-3" style="margin-top:16px">
+        <div class="callout info" style="margin:0"><div class="t">Folga (f)</div>"Sobra" de um recurso. Pode ficar na solução final sem problema — é real.</div>
+        <div class="callout info" style="margin:0"><div class="t">Excesso (e)</div>O quanto passou de um mínimo exigido. Também é uma variável real.</div>
+        <div class="callout danger" style="margin:0"><div class="t">Artificial (a)</div>Um "andaime" fictício. <b>Tem que valer 0</b> no final — é isso que a Fase 1 garante.</div>
+      </div>
+
+      <h3 id="t4">4. Por que precisamos de duas fases?</h3>
+      <p>Para começar o Simplex precisamos de uma <b>base inicial viável</b>. Com restrições "≤" isso é fácil (as folgas já formam a base). Mas com "≥" ou "=", as artificiais entram na base com um valor <b>diferente de zero</b> — e elas não fazem parte do problema real!</p>
+      <div class="step-list" style="margin-top:14px">
+        <li><h4>Fase 1 — Achar um ponto de partida legítimo</h4><p class="mb0">Esquecemos o Z original e minimizamos <b>w = soma das artificiais</b>. Se conseguirmos <b>w = 0</b>, expulsamos as artificiais e temos uma solução básica viável de verdade.</p></li>
+        <li><h4>Fase 2 — Otimizar o objetivo verdadeiro</h4><p class="mb0">Com um ponto viável em mãos, recolocamos o Z original e aplicamos o Simplex normal até o ótimo.</p></li>
+      </div>
+      <div class="callout tip"><div class="t"><svg class="icon"><use href="#i-bulb"></use></svg> Duas Fases vs. Big-M</div>Existe um método alternativo (<b>Big-M</b>) que penaliza as artificiais com um custo gigante "M". O método das <b>duas fases</b> evita esse "M" e é numericamente mais limpo — por isso é o pedido no seu exercício.</div>
+
+      <h3 id="t5">5. Anatomia do quadro (tableau)</h3>
+      <p>Cada quadro do Simplex tem sempre os mesmos elementos. Saber lê-los é metade do caminho:</p>
+      <p class="sub" style="margin-bottom:14px">No formato <b>condensado</b> que usamos aqui, o quadro tem um cabeçalho de <b>uma linha só</b> (Base · variáveis · b · θ) e, no fim, uma <b>única linha de decisão</b>. Sem linhas auxiliares de custo — só o essencial para escolher o pivô.</p>
+      <table class="deftable">
+        <tbody>
+          <tr><td><b>Base</b></td><td>As variáveis básicas atuais (uma por linha). São as únicas com valor diferente de zero; esse valor está na coluna <b>b</b>.</td></tr>
+          <tr><td><b>Variáveis</b></td><td><b>x</b> = decisão (as do problema real) · <b>folga</b> entra numa restrição "≤" · <b>excesso</b> numa "≥" · <b>artificial</b> é um andaime temporário que a Fase 1 elimina.</td></tr>
+          <tr><td><b>b</b></td><td>Lado direito = <b>valor</b> de cada variável básica na solução atual.</td></tr>
+          <tr><td><b>θ (teta)</b></td><td>Teste da razão = b ÷ (coluna que entra), só onde a coluna é <b>positiva</b>. O menor θ decide quem <b>sai</b>.</td></tr>
+          <tr><td><b>Linha de decisão</b><br><span class="sub">(w na Fase 1, Z na Fase 2)</span></td><td>A linha do fim. Um valor <b>negativo</b> indica que vale a pena trazer aquela variável para a base — é por ela que se escolhe quem <b>entra</b> e quando <b>parar</b>. Em muitos livros ela aparece escrita como <b>c<sub>j</sub> − z<sub>j</sub></b> (o "custo reduzido") — é exatamente a mesma coisa.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="t6">6. FASE 1 — passo a passo</h3>
+      <div class="card" style="border-color:rgba(245,181,68,.38);background:var(--amber-l)">
+      <ol class="step-list" style="margin:0">
+        <li><h4>Montar o quadro com objetivo w</h4><p class="mb0">Custo +1 para cada artificial, 0 para as demais. Base inicial = folgas e artificiais.</p></li>
+        <li><h4>Calcular a linha de decisão (w)</h4><p class="mb0">Como <b>minimizamos w</b>, procuramos valores <b>negativos</b>.</p></li>
+        <li><h4>Variável que ENTRA</h4><p class="mb0">A de <b>valor mais negativo na linha de decisão</b>. Se todos forem ≥ 0, a Fase 1 acabou.</p></li>
+        <li><h4>Variável que SAI</h4><p class="mb0">Teste da razão: menor <b>b ÷ coluna pivô</b> (apenas coeficientes positivos).</p></li>
+        <li><h4>Pivotear</h4><p class="mb0">Gauss–Jordan: zere o resto da coluna pivô e repita até w = 0.</p></li>
+      </ol>
+      </div>
+      <div class="callout ok"><div class="t"><svg class="icon"><use href="#i-check-circle"></use></svg> Fim da Fase 1</div>Se <b>w = 0</b> → temos base viável, vamos à Fase 2. &nbsp; Se <b>w &gt; 0</b> → o problema é <b>inviável</b> (pare por aqui).</div>
+
+      <h3 id="t7">7. FASE 2 — passo a passo</h3>
+      <div class="card" style="border-color:rgba(45,212,191,.38);background:var(--teal-l)">
+      <ol class="step-list" style="margin:0">
+        <li><h4>Limpar o quadro</h4><p class="mb0">Descarte as colunas das artificiais (ou impeça que reentrem) e troque o objetivo de w para o <b>Z original</b>.</p></li>
+        <li><h4>Recalcular a linha de decisão com o Z verdadeiro</h4><p class="mb0">Agora vale o critério do tipo do problema.</p></li>
+        <li><h4>Variável que ENTRA</h4><p class="mb0"><b>MAX</b>: o valor <b>mais positivo</b> da linha de decisão. &nbsp; <b>MIN</b>: o <b>mais negativo</b>.</p></li>
+        <li><h4>Variável que SAI</h4><p class="mb0">Teste da razão, igual à Fase 1.</p></li>
+        <li><h4>Parar no ótimo</h4><p class="mb0"><b>MAX</b>: toda a linha de decisão <b>≤ 0</b>. &nbsp; <b>MIN</b>: toda <b>≥ 0</b>.</p></li>
+      </ol>
+      </div>
+
+      <h3 id="t8">8. Como ler o resultado</h3>
+      <div class="acc open">
+        <button><span><svg class="icon lead" style="color:var(--green)"><use href="#i-check-circle"></use></svg> Solução ótima</span> <svg class="icon chev"><use href="#i-chevron-down"></use></svg></button>
+        <div class="body"><p class="mb0">Todos os custos reduzidos satisfazem o critério de parada. As variáveis <b>básicas</b> valem o seu <b>b</b>; as <b>não-básicas</b> valem <b>0</b>. Z* está no canto da linha de decisão (coluna b).</p></div>
+      </div>
+      <div class="acc">
+        <button><span><svg class="icon lead" style="color:var(--amber)"><use href="#i-infinity"></use></svg> Solução ilimitada</span> <svg class="icon chev"><use href="#i-chevron-down"></use></svg></button>
+        <div class="body"><p class="mb0">A coluna da variável que entraria <b>não tem nenhum coeficiente positivo</b> → não há teste da razão → Z cresce sem limite. <b>É o caso do problema (a) do enunciado!</b></p></div>
+      </div>
+      <div class="acc">
+        <button><span><svg class="icon lead" style="color:var(--rose)"><use href="#i-ban"></use></svg> Solução inviável</span> <svg class="icon chev"><use href="#i-chevron-down"></use></svg></button>
+        <div class="body"><p class="mb0">A Fase 1 termina com <b>w &gt; 0</b>: é impossível zerar as artificiais, logo nenhum ponto satisfaz todas as restrições.</p></div>
+      </div>
+      <div class="acc">
+        <button><span><svg class="icon lead" style="color:var(--primary)"><use href="#i-copy"></use></svg> Soluções ótimas alternativas</span> <svg class="icon chev"><use href="#i-chevron-down"></use></svg></button>
+        <div class="body"><p class="mb0">No quadro ótimo, uma variável <b>não-básica</b> tem <b>valor 0 na linha de decisão</b>: existe outro vértice com o mesmo Z* (um segmento inteiro de ótimos). <b>É o caso do problema (b)!</b></p></div>
+      </div>
+
+      <div class="tac" style="margin-top:26px">
+        <button class="btn btn-primary" data-go="workflow">Ver o fluxograma completo <svg class="icon"><use href="#i-arrow-right"></use></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKFLOW ============ -->
+<section id="workflow" class="section">
+  <h2 class="h2icon"><svg class="icon"><use href="#i-workflow"></use></svg> Workflow do Método das Duas Fases</h2>
+  <p class="sub">Siga as setas. Cada bloco tracejado é uma <b>decisão</b>; cada cor indica a fase.</p>
+  <div class="flow" style="margin-top:18px">
+    <div class="flow-node start"><div class="h"><span class="flow-num">I</span> Escrever na forma padrão</div><small>b ≥ 0; ≤ → folga; ≥ → excesso + artificial; = → artificial.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node decision"><div class="h"><svg class="icon"><use href="#i-help"></use></svg> Surgiram variáveis artificiais?</div><small><b>Não</b> → pule direto para a Fase 2. &nbsp; <b>Sim</b> → faça a Fase 1.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node f1"><div class="h"><span class="badge f1">FASE 1</span> Minimizar w = Σ artificiais</div><small>Entra: valor mais negativo da linha de decisão. Sai: menor razão b/coluna. Pivotear e repetir.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node decision"><div class="h"><svg class="icon"><use href="#i-help"></use></svg> Conseguiu w = 0 ?</div><small><b>Não (w &gt; 0)</b> → problema INVIÁVEL, pare. &nbsp; <b>Sim</b> → siga.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node f2"><div class="h"><span class="badge f2">Transição</span> Remover artificiais + repor Z original</div><small>As colunas artificiais saem de cena; volta a função objetivo verdadeira.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node f2"><div class="h"><span class="badge f2">FASE 2</span> Otimizar Z</div><small>Entra: MAX→ mais positivo / MIN→ mais negativo. Sai: teste da razão. Pivotear.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node decision"><div class="h"><svg class="icon"><use href="#i-help"></use></svg> Critério de parada satisfeito?</div><small>MAX: toda a linha de decisão ≤ 0. &nbsp; MIN: toda ≥ 0. &nbsp; Coluna sem positivo → ilimitado.</small></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-node end"><div class="h"><span class="flow-num">IV</span> Ler e conferir o resultado</div><small>Básicas = b, não-básicas = 0. Substitua no modelo original para validar Z*.</small></div>
+  </div>
+
+  <div class="callout tip" style="margin-top:26px"><div class="t"><svg class="icon"><use href="#i-brain"></use></svg> Mnemônico</div><b>"PADRÃO → ANDAIME → ZERA → TROCA → OTIMIZA → CONFERE"</b> — Padroniza, monta o andaime (artificiais), zera o andaime (Fase 1), troca o objetivo, otimiza (Fase 2) e confere no modelo original.</div>
+  <div class="tac" style="margin-top:14px"><button class="btn btn-primary" data-go="colinha">Ir para a colinha <svg class="icon"><use href="#i-arrow-right"></use></svg></button></div>
+</section>
+
+<!-- ============ COLINHA ============ -->
+<section id="colinha" class="section">
+  <div class="row-between">
+    <div><h2 class="mb0 h2icon"><svg class="icon"><use href="#i-clipboard"></use></svg> Colinha de bolso</h2><p class="sub">Tudo que você precisa lembrar, em um cartão. Use <span class="kbd">Ctrl/Cmd + P</span> para imprimir.</p></div>
+    <button class="btn btn-line no-print" onclick="window.print()"><svg class="icon"><use href="#i-printer"></use></svg> Imprimir</button>
+  </div>
+  <div class="cheat" style="margin-top:12px">
+    <div class="card"><h4><span class="nch">1</span> Padronização</h4><ul>
+      <li><b>b &lt; 0?</b> multiplique por −1 (inverte o sinal).</li>
+      <li><b>≤ b</b> → <b>+ folga</b> (base ok)</li>
+      <li><b>≥ b</b> → <b>− excesso + artificial</b></li>
+      <li><b>= b</b> → <b>+ artificial</b></li>
+    </ul></div>
+    <div class="card"><h4><span class="nch">2</span> Quem ENTRA na base</h4><ul>
+      <li><b>Fase 1</b> (min w): linha de decisão <b>mais negativa</b></li>
+      <li><b>Fase 2 — MAX</b>: linha de decisão <b>mais positiva</b></li>
+      <li><b>Fase 2 — MIN</b>: linha de decisão <b>mais negativa</b></li>
+      <li>Empate? escolha qualquer um (ou a regra de Bland).</li>
+    </ul></div>
+    <div class="card"><h4><span class="nch">3</span> Quem SAI da base</h4><ul>
+      <li>Teste da razão: <b>θ = b ÷ coluna pivô</b></li>
+      <li>Só onde a coluna é <b>&gt; 0</b>.</li>
+      <li>Sai a do <b>menor θ</b> (≥ 0).</li>
+      <li>Nenhum θ válido → <b>ILIMITADO</b></li>
+    </ul></div>
+    <div class="card"><h4><span class="nch">4</span> Pivoteamento (Gauss–Jordan)</h4><ul>
+      <li>Linha pivô ÷ elemento pivô → vira 1.</li>
+      <li>Demais linhas: zere a coluna pivô.</li>
+      <li>Troque o rótulo da base na linha que saiu.</li>
+    </ul></div>
+    <div class="card"><h4><span class="nch">5</span> Critérios de PARADA</h4><ul>
+      <li><b>Fase 1</b>: toda a linha de decisão ≥ 0. Então olhe <b>w</b>.</li>
+      <li>w = 0 → segue p/ Fase 2. &nbsp; w &gt; 0 → <b>INVIÁVEL</b></li>
+      <li><b>Fase 2 MAX</b>: toda a linha de decisão ≤ 0.</li>
+      <li><b>Fase 2 MIN</b>: toda a linha de decisão ≥ 0.</li>
+    </ul></div>
+    <div class="card"><h4><span class="nch">6</span> Lendo o resultado</h4><ul>
+      <li><b>Básica</b> = valor em b. &nbsp;<b>Não-básica</b> = 0.</li>
+      <li><b>Z*</b> está na linha de decisão (coluna b).</li>
+      <li>Não-básica com valor 0 na linha de decisão → <b>ótimos alternativos</b></li>
+      <li>Confira substituindo no modelo original.</li>
+    </ul></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h4 class="mt0 h2icon" style="font-size:15px"><svg class="icon" style="width:19px;height:19px;color:var(--primary)"><use href="#i-ruler"></use></svg> Fórmulas-chave</h4>
+    <div class="formula">
+      <div class="ln">linha de decisão = custo reduzido = c<sub>j</sub> − z<sub>j</sub></div>
+      <div class="ln"><span class="sub">(z<sub>j</sub> = Σ<sub>i</sub> c<sub>B(i)</sub> × a<sub>ij</sub> — o cálculo por trás, caso o seu livro use)</span></div>
+      <div class="ln">θ<sub>i</sub> = b<sub>i</sub> / a<sub>ik</sub>&nbsp; (k = coluna que entra, a<sub>ik</sub> &gt; 0) → escolher mínimo</div>
+      <div class="ln">Valor objetivo = Σ<sub>i</sub> ( c<sub>B(i)</sub> × b<sub>i</sub> )</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESOLVER ============ -->
+<section id="resolver" class="section">
+  <h2 class="h2icon"><svg class="icon"><use href="#i-calculator"></use></svg> Resolvedor — todos os quadros, passo a passo</h2>
+  <p class="sub">Escolha um problema fixo do enunciado, gere um aleatório ou monte o seu. O sistema mostra a forma padrão, cada quadro da Fase 1 e da Fase 2, o pivô, o teste da razão e a conferência final.</p>
+
+  <div class="tabs" style="margin-top:16px">
+    <button class="tab-btn active" data-tab="semana7"><svg class="icon"><use href="#i-pin"></use></svg> Problema da semana 7</button>
+    <button class="tab-btn" data-tab="semana8"><svg class="icon"><use href="#i-pin"></use></svg> Problema da semana 8</button>
+    <button class="tab-btn" data-tab="semana9"><svg class="icon"><use href="#i-pin"></use></svg> Problema da semana 9</button>
+    <button class="tab-btn" data-tab="fixo"><svg class="icon"><use href="#i-pin"></use></svg> Problema da semana 10</button>
+    <button class="tab-btn" data-tab="random"><svg class="icon"><use href="#i-dices"></use></svg> Gerar aleatório</button>
+    <button class="tab-btn" data-tab="custom"><svg class="icon"><use href="#i-pencil"></use></svg> Montar o meu</button>
+  </div>
+
+  <!-- pane semana 7 -->
+  <div class="solve-pane active" id="pane-semana7">
+    <div class="grid cols-2">
+      <div class="card feature">
+        <span class="badge gray">ANDRADE (adaptado)</span>
+        <div class="formula" style="margin:12px 0;font-size:15px">
+          <div class="ln"><span class="op">Max</span> Z = 2x<sub>1</sub> − 3x<sub>2</sub> + 5x<sub>3</sub></div>
+          <div class="ln">2x<sub>1</sub>−x<sub>2</sub>+3x<sub>3</sub> = 12</div>
+          <div class="ln">x<sub>1</sub>+2x<sub>2</sub> = 6</div>
+          <div class="ln">3x<sub>1</sub>−x<sub>2</sub>+2x<sub>3</sub> ≤ 7</div>
+        </div>
+        <button class="btn btn-primary" id="btn-prob-s7">Resolver problema da semana 7 <svg class="icon"><use href="#i-play"></use></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- pane semana 8 -->
+  <div class="solve-pane" id="pane-semana8" style="display:none">
+    <div class="grid cols-2">
+      <div class="card feature">
+        <span class="badge gray">a) MOREIRA</span>
+        <div class="formula" style="margin:12px 0;font-size:15px">
+          <div class="ln"><span class="op">Max</span> Z = 2x<sub>1</sub> + 7x<sub>2</sub></div>
+          <div class="ln">3x<sub>1</sub>+2x<sub>2</sub> ≥ 20</div>
+          <div class="ln">4x<sub>1</sub>+4x<sub>2</sub> = 32</div>
+        </div>
+        <button class="btn btn-primary" id="btn-prob-s8a">Resolver problema A <svg class="icon"><use href="#i-play"></use></svg></button>
+      </div>
+      <div class="card feature">
+        <span class="badge gray">b) SILVA</span>
+        <div class="formula" style="margin:12px 0;font-size:15px">
+          <div class="ln"><span class="op">Max</span> Z = x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub></div>
+          <div class="ln">2x<sub>1</sub>+x<sub>2</sub>−x<sub>3</sub> ≤ 10</div>
+          <div class="ln">x<sub>1</sub>+x<sub>2</sub>+2x<sub>3</sub> ≥ 20</div>
+          <div class="ln">2x<sub>1</sub>+x<sub>2</sub>+3x<sub>3</sub> = 60</div>
+        </div>
+        <button class="btn btn-accent" id="btn-prob-s8b">Resolver problema B <svg class="icon"><use href="#i-play"></use></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- pane semana 9 -->
+  <div class="solve-pane" id="pane-semana9" style="display:none">
+    <div class="grid cols-2">
+      <div class="card feature">
+        <span class="badge gray">a) SILVA</span>
+        <div class="formula" style="margin:12px 0;font-size:15px">
+          <div class="ln"><span class="op">Min</span> Z = 3x<sub>1</sub> + 2x<sub>2</sub></div>
+          <div class="ln">2x<sub>1</sub>+x<sub>2</sub> ≥ 10</div>
+          <div class="ln">x<sub>1</sub>+5x<sub>2</sub> ≥ 15</div>
+        </div>
+        <button class="btn btn-primary" id="btn-prob-s9">Resolver problema da semana 9 <svg class="icon"><use href="#i-play"></use></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- pane semana 10 -->
+  <div class="solve-pane" id="pane-fixo" style="display:none">
+    <div class="grid cols-2">
+      <div class="card feature">
+        <span class="badge gray">a) SILVA</span>
+        <div class="formula" style="margin:12px 0;font-size:15px">
+          <div class="ln"><span class="op">Max</span> Z = x<sub>1</sub> + 2x<sub>2</sub> + x<sub>3</sub></div>
+          <div class="ln">2x<sub>1</sub>+3x<sub>2</sub>+x<sub>3</sub> ≥ 10</div>
+          <div class="ln">4x<sub>1</sub>+x<sub>2</sub>+2x<sub>3</sub> ≥ 20</div>
+        </div>
+        <button class="btn btn-primary" id="btn-prob-a">Resolver problema A <svg class="icon"><use href="#i-play"></use></svg></button>
+      </div>
+      <div class="card feature">
+        <span class="badge gray">b) SILVA</span>
+        <div class="formula" style="margin:12px 0;font-size:15px">
+          <div class="ln"><span class="op">Min</span> Z = 2x<sub>1</sub> + 4x<sub>2</sub> + 10x<sub>3</sub></div>
+          <div class="ln">x<sub>1</sub>+x<sub>2</sub>+x<sub>3</sub> ≤ 120</div>
+          <div class="ln">x<sub>1</sub>+2x<sub>2</sub>+5x<sub>3</sub> ≥ 30</div>
+        </div>
+        <button class="btn btn-accent" id="btn-prob-b">Resolver problema B <svg class="icon"><use href="#i-play"></use></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- pane random -->
+  <div class="solve-pane" id="pane-random" style="display:none">
+    <div class="card tac">
+      <p>Gere um problema aleatório que <b>sempre</b> exige as duas fases (com restrições "≥") e tem solução ótima finita.</p>
+      <button class="btn btn-primary" id="btn-gen"><svg class="icon"><use href="#i-dices"></use></svg> Gerar problema</button>
+    </div>
+    <div id="gen-area" style="margin-top:18px"></div>
+  </div>
+
+  <!-- pane custom -->
+  <div class="solve-pane" id="pane-custom" style="display:none">
+    <div id="builder"></div>
+  </div>
+
+  <div id="solve-output" style="margin-top:24px"></div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz" class="section">
+  <h2 class="h2icon"><svg class="icon"><use href="#i-help"></use></svg> Quiz — teste seu domínio</h2>
+  <p class="sub">Questões com feedback explicado. Erre à vontade: cada resposta vira aprendizado.</p>
+  <div class="card pad-lg" style="margin-top:12px"><div id="quiz-body"></div></div>
+</section>
+
+<div class="foot">
+  <p>Laboratório de estudo do Método Simplex de Duas Fases · construído para aprender Pesquisa Operacional de forma visual.<br>
+  Resolvedor próprio em JavaScript — funciona offline, sem instalar nada.</p>
+</div>
+
+</main>
+
+<script src="js/icons.js"></script>
+<script src="js/simplex.js"></script>
+<script src="js/problems.js"></script>
+<script src="js/render.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
