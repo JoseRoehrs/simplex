@@ -6,6 +6,47 @@ próxima rodada. Veja as regras em [README.md](./README.md).
 
 ## Registro
 
+### 2026-06-24 — Aba "Casos Especiais" (degeneração, empate na razão, ótimos alternativos)
+
+**O que é:** nova aba que inspeciona a resolução real de um PPL e sinaliza três casos
+especiais: **empate no teste da razão** (≥2 linhas com a mesma razão mínima), **degeneração**
+(variável básica em nível 0 em algum quadro) e **ótimos alternativos** (não-básica com custo
+reduzido 0 no quadro ótimo). Cada caso lista iteração/variáveis + explicação.
+
+**Por que ajuda a aprender:** são exatamente os diagnósticos que o Quiz cobra em teoria, mas
+que o sistema nunca *detectava num problema concreto*. Conecta o "caminho feliz" às exceções
+que aparecem na prática.
+
+**Como o aluno usa:** aba **Casos Especiais** → escolhe/cola um PPL → "Analisar casos
+especiais" → vê badges + tabelas por categoria (ou "nenhum caso especial").
+
+**Arquivos:**
+- `src/core/specialCases.ts` (novo) — `analyzeSpecialCases(model)`: lê os quadros de `solve()`
+  (recomputa θ do snapshot como a TableauView), detecta os 3 casos em frações exatas.
+- `src/components/SpecialCasesView.tsx` (novo) — UI autocontida (textarea + 3 exemplos:
+  degeneração+empate, múltiplos ótimos, caso normal), badges + callouts + `lab-table`.
+- `src/App.tsx` — aba `casos` ("Casos Especiais").
+- `test/specialCases.test.ts` (novo) — 4 testes.
+- `README.md` — seção + árvore + testes.
+
+**Verificação (real):**
+- `npm run typecheck` → ok.
+- `npm test` → **43 testes passam** (6 arquivos). Os 4 novos: caso normal sem nenhum caso
+  (anti-falso-positivo); `max x1+x2 s.a. x1≤3, x2≤3, x1+x2≤3` dispara os 3 ao mesmo tempo
+  (z*=3, empate ≥2 linhas, degeneração, múltiplos ótimos); múltiplos ótimos em `max x1+2x2`
+  (z*=8); e propagação de status em problema inviável.
+- `npm run build` → ok (avisos pré-existentes).
+
+**Princípios respeitados:** UI não recalcula matemática — `analyzeSpecialCases` só lê os
+snapshots de `solve()`; frações exatas via `frac.ts`. Componente autocontido.
+
+**Nota de paralelismo:** outra sessão adicionou `HomeView`/aba "Início" e re-estilizou o
+header durante a rodada — reli o `App.tsx` atual antes de inserir a aba `casos`.
+
+**Backlog restante:** análise de sensibilidade (cⱼ/RHS, verificável por perturbação com
+`solve()`); exportar a resolução (markdown/imagem); problemas aleatórios com solução
+garantida; passo-a-passo narrado por etapa.
+
 ### 2026-06-24 — Aba "Preveja o Pivô" (drill interativo de escolha de pivô)
 
 **O que é:** nova aba que transforma cada iteração do Simplex em um exercício de previsão: o

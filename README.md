@@ -53,6 +53,16 @@ só inclui pivôs de Dantzig (ignora a remoção de artificiais) — e o "reveal
 quadro anotado do solver (pivô destacado, coluna θ e o "Por quê"). Ao final, mostra
 o placar de acertos. É treino ativo do passo a passo, complementar ao Quiz conceitual.
 
+### Casos Especiais — degeneração, empate e ótimos alternativos
+
+A aba **Casos Especiais** inspeciona a resolução real de um PPL (`src/core/specialCases.ts`)
+e sinaliza três fenômenos sutis que o "caminho feliz" esconde: **empate no teste da
+razão** (≥ 2 linhas com a mesma razão mínima θ), **degeneração** (uma variável
+básica vale 0 em algum quadro) e **ótimos alternativos** (no quadro ótimo, uma
+não-básica tem custo reduzido 0 → todo um segmento de soluções com o mesmo `z*`).
+Cada caso vem com a iteração/variáveis envolvidas e uma explicação do que significa —
+os mesmos diagnósticos que o Quiz cobra em teoria, agora detectados num problema concreto.
+
 ### Dualidade — primal ↔ dual
 
 A aba **Dualidade** constrói automaticamente o **problema dual** de qualquer PPL
@@ -90,6 +100,7 @@ src/
     flowTrace.ts     # Árvore de decisão (grafo) + traço do caminho de cada problema
     dual.ts          # Constrói o dual de um PPL + forma resolvível + preços-sombra
     pivotQuiz.ts     # Gera perguntas "preveja o pivô" (entra/sai) a partir de solve()
+    specialCases.ts  # Detecta degeneração, empate na razão e ótimos alternativos
   solvers/
     glpkSolver.ts    # Adaptador GLPK (referência)
     jsLpSolver.ts    # Adaptador javascript-lp-solver
@@ -100,12 +111,14 @@ src/
     WorkflowView.tsx    # Aba Workflow: árvore de decisão estilo n8n + seletor de semana
     DualView.tsx        # Aba Dualidade: monta o dual, resolve e checa a dualidade forte
     PivotQuizView.tsx   # Aba Preveja o Pivô: drill de entrada/saída com reveal anotado
+    SpecialCasesView.tsx # Aba Casos Especiais: degeneração / empate / ótimos alternativos
   App.tsx            # UI: abas (Resolver / Workflow / Dualidade / …) + passos + visão geométrica + validação
 test/
   simplex.test.ts    # Casos com ótimo conhecido + validação cruzada
   parser.test.ts     # Parser de PPL
   dual.test.ts       # Dual + dualidade forte (z* primal = z* dual) + folga complementar
   pivotQuiz.test.ts  # Perguntas de pivô: entrada por Dantzig + saída pela razão mínima
+  specialCases.test.ts # Degeneração + empate na razão + ótimos alternativos
 ```
 
 ## Como rodar

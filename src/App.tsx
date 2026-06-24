@@ -13,8 +13,11 @@ import { CheatSheetView } from './components/CheatSheetView';
 import { QuizView } from './components/QuizView';
 import { DualView } from './components/DualView';
 import { PivotQuizView } from './components/PivotQuizView';
+import { HomeView } from './components/HomeView';
+import { SpecialCasesView } from './components/SpecialCasesView';
 
 type Tab =
+  | 'inicio'
   | 'solver'
   | 'workflow'
   | 'fracoes'
@@ -24,7 +27,8 @@ type Tab =
   | 'colinha'
   | 'quiz'
   | 'dual'
-  | 'pivo';
+  | 'pivo'
+  | 'casos';
 
 const EXAMPLES: Record<string, string> = {
   'Fase única (max, <=)': `max 3x1 + 5x2
@@ -59,7 +63,7 @@ x1, x2 >= 0`,
 const PHASE_LABEL: Record<1 | 2, string> = { 1: 'Fase 1', 2: 'Fase 2' };
 
 export function App() {
-  const [tab, setTab] = useState<Tab>('solver');
+  const [tab, setTab] = useState<Tab>('inicio');
   const [text, setText] = useState(EXAMPLES['Fase única (max, <=)']);
   const [report, setReport] = useState<ValidationReport | null>(null);
   const [model, setModel] = useState<LPModel | null>(null);
@@ -85,15 +89,26 @@ export function App() {
 
   return (
     <div className="app">
-      <header>
-        <h1>Simplex — Sistema de Aprendizado</h1>
-        <p className="subtitle">
-          Resolva PPLs passo a passo (Simplex e Simplex Duas Fases) com frações
-          exatas, e valide o ótimo contra o GLPK.
-        </p>
+      <header className="app-header">
+        <span className="brand-logo" aria-hidden="true">Σ</span>
+        <div>
+          <h1>
+            Simplex <span className="grad">— Sistema de Aprendizado</span>
+          </h1>
+          <p className="subtitle">
+            Resolva PPLs passo a passo (Simplex e Simplex Duas Fases) com frações
+            exatas, e valide o ótimo contra o GLPK.
+          </p>
+        </div>
       </header>
 
       <nav className="tabs">
+        <button
+          className={`tab ${tab === 'inicio' ? 'tab-on' : ''}`}
+          onClick={() => setTab('inicio')}
+        >
+          Início
+        </button>
         <button
           className={`tab ${tab === 'solver' ? 'tab-on' : ''}`}
           onClick={() => setTab('solver')}
@@ -154,12 +169,20 @@ export function App() {
         >
           Preveja o Pivô
         </button>
+        <button
+          className={`tab ${tab === 'casos' ? 'tab-on' : ''}`}
+          onClick={() => setTab('casos')}
+        >
+          Casos Especiais
+        </button>
         <a className="tab-link" href="/jogo.html" target="_blank" rel="noopener noreferrer">
           🎮 Jogo
         </a>
       </nav>
 
-      {tab === 'workflow' ? (
+      {tab === 'inicio' ? (
+        <HomeView onNavigate={(t) => setTab(t as Tab)} />
+      ) : tab === 'workflow' ? (
         <WorkflowView />
       ) : tab === 'fracoes' ? (
         <FractionTrainer />
@@ -177,6 +200,8 @@ export function App() {
         <DualView />
       ) : tab === 'pivo' ? (
         <PivotQuizView />
+      ) : tab === 'casos' ? (
+        <SpecialCasesView />
       ) : (
         <>
       <section className="input-panel">

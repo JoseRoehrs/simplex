@@ -273,3 +273,75 @@ essa soma ≠ 0. Logo `objectiveValue === '0'` ⇔ factível — o mesmo critér
 > Observação: backlog do `/melhoria-didatica` no app React está ficando raso (6+ rodadas hoje,
 > várias sessões em paralelo). Próximos alvos de maior valor tendem a ser no app legado
 > `simplex-duas-fases/` ou em outros loops (`/conteudo-pedagogico`, `/cacar-bugs`).
+
+---
+
+## 2026-06-24 — Coluna θ auto-explicativa no app LEGADO (`simplex-duas-fases/`)
+
+**O atrito:** no quadro condensado do app legado, a coluna do teste da razão tinha só o
+cabeçalho `θ` e células com a razão crua (a escolhida em `<b>…</b> ◄`). Um aluno via os números
+sem saber **de onde vêm** (θ = b ÷ coeficiente da coluna que entra) nem por que uma linha fica
+`—`. O `explain()` mencionava "menor b/coluna positiva", mas a **coluna em si** não se explicava.
+Era a candidata nº 1 da **primeira** rodada do diário ("coluna θ com a fórmula visível") — nunca
+feita. Atacar o app legado também evita colidir com as várias sessões paralelas mexendo no React.
+
+**O que mudou e onde (`simplex-duas-fases/js/render.js`, função `tableau()` — só apresentação):**
+- **Cabeçalho da coluna θ** deixou de ser `θ` e virou `θ = b ÷ <var que entra>` (sempre visível,
+  como no app React), com `title` explicando a regra: menor razão ≥ 0 (◄) sai; coef. ≤ 0 fica fora (—).
+- **Cada célula da razão** ganhou `title` com a conta exata: `b ÷ coef = θ` (reusa `snap.ratios[i]`
+  já calculado pelo motor — só mostra os operandos `snap.b[i]` e `snap.A[i][entering]` e o resultado
+  do motor; **não recalcula**). A linha escolhida acrescenta "menor razão ≥ 0, por isso SAI"; as
+  linhas `—` explicam "coeficiente ≤ 0: não limita o crescimento, fora do teste".
+- Respeitou o design do legado: sem emoji, sem CSS/vars novos, `title` em texto puro (nomes via
+  `label+sub`, pois `vname()` traz `<sub>`).
+
+**Verificação:**
+- `node --check js/render.js` → OK; `node --check js/simplex.js` → OK.
+- Harness Node (carrega `simplex.js`+`render.js`, `Render.solution` em min 2x₁+3x₂ s.a. x₁+x₂≥4,
+  2x₁+x₂≥5): cabeçalho inline `θ = b ÷ …` presente; tooltip de célula = `title="4 ÷ 1 = 4"`;
+  tooltips "menor razão SAI" e "fora do teste" presentes; banner ótimo renderiza (Z = …).
+- Sanity do repo React (intocado): `npm run typecheck` 0, `npm test` **39/39**, `npm run build` 0.
+
+**Candidatas pra próxima rodada:**
+1. Levar o destaque do custo reduzido mais negativo (célula da linha de decisão `w`/`Z`) ao app
+   legado — espelha o `entering-rc` do React (a coluna já é tingida, falta marcar a célula).
+2. `FeasibleRegion` (React): realçar o vértice quando o quadro correspondente está em foco.
+3. Tornar a `TableauLegend` (React) colapsável (`<details>`, aberta por padrão).
+4. Revisar `explain()` do legado: a razão do "Sai da base" usa divisão em float
+   (`snap.b/snap.A`) — conferir se aparece como fração exata (possível alvo de `/cacar-bugs`).
+
+---
+
+## 2026-06-24 — Célula que ENTRA destacada na linha de decisão (app LEGADO `simplex-duas-fases/`)
+
+**O atrito (= candidata #1 recorrente):** no quadro condensado do app legado — o que o usuário de
+fato usa — a **coluna** que entra é tingida (`in-piv-col`, azul), mas a **célula** específica da
+linha de decisão (`w`/`Z`) que dispara a escolha (o valor extremo de `snap.d[entering]`, regra de
+Dantzig) não tinha marca própria. O React já fazia isso (`entering-rc`); o legado ficou para trás.
+
+**O que mudou e onde (só apresentação — usa `snap.entering`/`snap.pivot` que o motor já produz):**
+- `simplex-duas-fases/js/render.js` — na linha de decisão (`drow`) do `tableau()`, a célula
+  `dd === entering` (somente quando há pivô: `piv` verdadeiro) recebe a classe `dec-enter`, um
+  marcador inline ` <span class="ent-mark">◄</span>` (mesmo glifo `◄` já usado na linha do θ que
+  SAI) e um `title` explicando "valor decisivo → entra (Dantzig); quem sai vem do teste da razão".
+- `simplex-duas-fases/css/styles.css` — `table.tableau .drow td.dec-enter` em **âmbar**
+  (`--amber-l`/`--amber-d` + `box-shadow inset 2px`), com `!important` e ordem após `in-piv-col`
+  para vencer o tingimento azul da coluna. Sem emoji (convenção do app legado).
+
+**Por que é seguro:** `simplex.js` só define `snap.entering ≥ 0` em passos de pivô; no ótimo
+`entering = -1` e `snap.pivot` é `undefined`. Gatilho `piv && dd === entering` ⇒ marca só os
+pivôs reais, nunca o quadro ótimo. Nada recalculado — apenas leio o índice que o motor escolheu.
+
+**Verificação:**
+- `node --check js/render.js` e `js/simplex.js` → OK.
+- Harness Node (`Render.solution` no min 2x₁+3x₂ s.a. x₁+x₂≥4, 2x₁+x₂≥5): 5 linhas de decisão,
+  **3 marcadas** (os pivôs), **última (ótimo) NÃO marcada**, glifo `◄` presente, exatamente 1
+  célula marcada por passo. ✓
+- Sanity do app React (intocado): `npm run typecheck` 0 erros, `npm test` **39/39**.
+
+**Candidatas pra próxima rodada:**
+1. `FeasibleRegion` (React): realçar o vértice quando o quadro correspondente está em foco (hover compartilhado).
+2. Tornar a `TableauLegend` (React) colapsável (`<details>`, aberta por padrão).
+3. Legado: a razão do "Sai da base" em `explain()` usa divisão float (`snap.b/snap.A`) em vez de
+   fração exata — melhor como `/cacar-bugs`, mas a apresentação pode mostrar `toFrac` (já há helper).
+4. Backlog raso: considerar pausar `/melhoria-didatica` ou migrar valor para `/conteudo-pedagogico`.

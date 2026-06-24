@@ -6,6 +6,33 @@ gabarito; o motor é o suspeito.
 
 ---
 
+### 2026-06-24 — Sem divergências (passada 2) → loop PAUSADO (critério de parada atingido)
+
+Segunda rodada limpa consecutiva. Sweep focado nos status que estavam sub-amostrados:
+
+- **36.000 PPLs** com viés forte para **inviável** e **ilimitado** (e dois fases), comparando
+  status motor × GLPK com concordância obrigatória do jsLP. Distribuição obtida:
+  `optimal=8.586, infeasible=20.108, unbounded=7.306`. Resultado: **0** divergências de status,
+  **0** divergências de ótimo, **0** estouros de `MAX_ITER`, **0** crashes. Inclui ilimitação e
+  inviabilidade detectadas em problemas de **duas fases** (com artificiais).
+
+**Critério de parada atingido.** Duas passadas adversariais consecutivas (passada 1 + passada 2)
+sem nenhuma divergência. Somando as rodadas: **>100.000 PPLs** (inteiros pequenos/grandes,
+decimais, degenerados, inviáveis, ilimitados), **15.000 round-trips de parser** e **14.000
+verificações de invariantes de tableau** — o motor bate com a referência (GLPK) em toda a
+bateria, e cada quadro intermediário está em forma canônica com `b ≥ 0`.
+
+**→ Loop `/cacar-bugs` pausado.** Os 2 bugs reais desta sessão (termos repetidos no parser;
+ciclagem de Beale) estão corrigidos e cobertos por testes de regressão. Recomendação: migrar o
+esforço para `/melhoria-didatica` ou `/nova-ideia`. Reabrir a caça se o motor mudar
+substancialmente (novo método, mudança em `frac.ts`, suporte a variáveis livres etc.).
+
+**Para retomar:** `/loop /cacar-bugs` — e priorizar as suspeitas remanescentes abaixo (passada 1),
+em especial decidir o escopo de **fração no input do parser** (o único candidato a bug real que
+sobrou, mas ambíguo quanto a escopo).
+
+---
+
 ### 2026-06-24 — Sem divergências (passada 1 de caça limpa)
 
 Rodada sem bug encontrado. Após os fixes de termos repetidos (parser) e anti-ciclagem (Bland),

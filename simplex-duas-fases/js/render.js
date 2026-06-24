@@ -57,7 +57,14 @@
     for (var j = 0; j < ncols; j++) {
       html += '<th class="' + colCls(j) + (greyArt && artSet.has(j) ? ' art' : '') + '">' + vname(vars[j]) + '</th>';
     }
-    html += '<th>b</th>' + (piv ? '<th>θ</th>' : '') + '</tr>';
+    var thetaHead = '';
+    if (piv) {
+      var entName = vars[entering].label + vars[entering].sub; // texto puro p/ o title
+      thetaHead = '<th class="ratio-h" title="Teste da razão: θ = b ÷ coeficiente da coluna que entra (' + entName +
+        '). A MENOR razão ≥ 0 (marcada com ◄) indica a variável que SAI. Linhas com coeficiente ≤ 0 ficam fora do teste (—).">' +
+        'θ = b ÷ ' + vname(vars[entering]) + '</th>';
+    }
+    html += '<th>b</th>' + thetaHead + '</tr>';
     html += '</thead><tbody>';
 
     // linhas das restrições
@@ -75,14 +82,32 @@
       if (piv) {
         var r = snap.ratios ? snap.ratios[i] : null;
         var chosen = (leaving === i);
-        html += '<td class="ratio">' + (r == null ? '—' : (chosen ? '<b>' + toFrac(r) + '</b> ◄' : toFrac(r))) + '</td>';
+        var coef = snap.A[i][entering]; // coeficiente da coluna que entra, nesta linha
+        // Tooltip mostra a conta exata b ÷ coef = θ (reusa a razão já calculada pelo motor).
+        var rTitle = (r == null)
+          ? 'Coeficiente ' + toFrac(coef) + ' ≤ 0 nesta linha: a básica não limita o crescimento de quem entra, então fica fora do teste da razão.'
+          : toFrac(snap.b[i]) + ' ÷ ' + toFrac(coef) + ' = ' + toFrac(r) + (chosen ? ' — menor razão ≥ 0, por isso esta linha SAI da base.' : '');
+        html += '<td class="ratio" title="' + rTitle + '">' + (r == null ? '—' : (chosen ? '<b>' + toFrac(r) + '</b> ◄' : toFrac(r))) + '</td>';
       }
       html += '</tr>';
     }
     // única linha de objetivo (linha de decisão / custo reduzido) — fica no lugar de zⱼ e cⱼ−zⱼ.
     // valor negativo = vale a pena trazer aquela variável para a base.
     html += '<tr class="drow"><td class="label-cell" title="Linha de decisão: um valor negativo indica que vale a pena trazer aquela variável para a base.">' + objName + '</td>';
-    for (var dd = 0; dd < ncols; dd++) html += '<td class="' + colCls(dd) + (greyArt && artSet.has(dd) ? ' art' : '') + '">' + toFrac(snap.d[dd]) + '</td>';
+    for (var dd = 0; dd < ncols; dd++) {
+      var dcls = colCls(dd) + (greyArt && artSet.has(dd) ? ' art' : '');
+      // Marca a CÉLULA decisiva: o valor da linha de decisão que faz esta coluna ENTRAR
+      // na base (regra de Dantzig). Só em passos com pivô — no ótimo entering = -1.
+      if (piv && dd === entering) {
+        var entNm = vars[entering].label + vars[entering].sub;
+        html += '<td class="' + dcls + ' dec-enter" title="' + entNm +
+          ' tem o valor decisivo desta linha (regra de Dantzig): por isso ENTRA na base. ' +
+          'Quem SAI vem do teste da razão (coluna θ).">' +
+          toFrac(snap.d[dd]) + ' <span class="ent-mark">◄</span></td>';
+      } else {
+        html += '<td class="' + dcls + '">' + toFrac(snap.d[dd]) + '</td>';
+      }
+    }
     html += '<td>' + toFrac(snap.obj) + '</td>' + (piv ? '<td></td>' : '') + '</tr>';
 
     html += '</tbody></table></div>';

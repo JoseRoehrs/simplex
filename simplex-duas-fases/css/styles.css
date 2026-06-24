@@ -251,6 +251,8 @@ table.tableau .drow td { background: rgba(91,156,255,.08); font-weight:700; colo
 table.tableau .label-cell { text-align:right; font-weight:700; color:var(--ink); background:var(--surface-2); font-family:var(--font); }
 table.tableau td.in-piv-col, table.tableau th.in-piv-col { background: rgba(91,156,255,.18) !important; }
 table.tableau .zrow td.in-piv-col, table.tableau .drow td.in-piv-col { background: rgba(91,156,255,.24) !important; }
+table.tableau .drow td.dec-enter { background: var(--amber-l) !important; color: var(--amber-d) !important; box-shadow: inset 0 0 0 2px rgba(245,181,68,.55); border-radius:6px; }
+table.tableau .drow td.dec-enter .ent-mark { color: var(--amber-d); font-weight:700; }
 table.tableau tr.piv-row td { background: rgba(245,181,68,.14) !important; }
 table.tableau td.piv-cell { background: linear-gradient(135deg,var(--primary-2),var(--primary)) !important; color:#08111f !important; font-weight:700; box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 0 16px -2px rgba(91,156,255,.8); border-radius:6px; }
 table.tableau td.art, table.tableau th.art { opacity:.35; }
