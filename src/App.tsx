@@ -110,10 +110,22 @@ export function App() {
           Início
         </button>
         <button
-          className={`tab ${tab === 'solver' ? 'tab-on' : ''}`}
-          onClick={() => setTab('solver')}
+          className={`tab ${tab === 'teoria' ? 'tab-on' : ''}`}
+          onClick={() => setTab('teoria')}
         >
-          Resolver
+          Teoria
+        </button>
+        <button
+          className={`tab ${tab === 'docs' ? 'tab-on' : ''}`}
+          onClick={() => setTab('docs')}
+        >
+          Docs
+        </button>
+        <button
+          className={`tab ${tab === 'videos' ? 'tab-on' : ''}`}
+          onClick={() => setTab('videos')}
+        >
+          Vídeos
         </button>
         <button
           className={`tab ${tab === 'workflow' ? 'tab-on' : ''}`}
@@ -128,22 +140,16 @@ export function App() {
           Treino de Frações
         </button>
         <button
-          className={`tab ${tab === 'videos' ? 'tab-on' : ''}`}
-          onClick={() => setTab('videos')}
+          className={`tab ${tab === 'solver' ? 'tab-on' : ''}`}
+          onClick={() => setTab('solver')}
         >
-          Vídeos
+          Resolver
         </button>
         <button
-          className={`tab ${tab === 'docs' ? 'tab-on' : ''}`}
-          onClick={() => setTab('docs')}
+          className={`tab ${tab === 'pivo' ? 'tab-on' : ''}`}
+          onClick={() => setTab('pivo')}
         >
-          Docs
-        </button>
-        <button
-          className={`tab ${tab === 'teoria' ? 'tab-on' : ''}`}
-          onClick={() => setTab('teoria')}
-        >
-          Teoria
+          Preveja o Pivô
         </button>
         <button
           className={`tab ${tab === 'colinha' ? 'tab-on' : ''}`}
@@ -158,22 +164,16 @@ export function App() {
           Quiz
         </button>
         <button
-          className={`tab ${tab === 'dual' ? 'tab-on' : ''}`}
-          onClick={() => setTab('dual')}
-        >
-          Dualidade
-        </button>
-        <button
-          className={`tab ${tab === 'pivo' ? 'tab-on' : ''}`}
-          onClick={() => setTab('pivo')}
-        >
-          Preveja o Pivô
-        </button>
-        <button
           className={`tab ${tab === 'casos' ? 'tab-on' : ''}`}
           onClick={() => setTab('casos')}
         >
           Casos Especiais
+        </button>
+        <button
+          className={`tab ${tab === 'dual' ? 'tab-on' : ''}`}
+          onClick={() => setTab('dual')}
+        >
+          Dualidade
         </button>
         <a className="tab-link" href="/jogo.html" target="_blank" rel="noopener noreferrer">
           🎮 Jogo

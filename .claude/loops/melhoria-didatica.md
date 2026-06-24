@@ -345,3 +345,41 @@ pivôs reais, nunca o quadro ótimo. Nada recalculado — apenas leio o índice 
 3. Legado: a razão do "Sai da base" em `explain()` usa divisão float (`snap.b/snap.A`) em vez de
    fração exata — melhor como `/cacar-bugs`, mas a apresentação pode mostrar `toFrac` (já há helper).
 4. Backlog raso: considerar pausar `/melhoria-didatica` ou migrar valor para `/conteudo-pedagogico`.
+
+---
+
+## 2026-06-24 — Workflow: auto-rolar o canvas para o CAMINHO ACESO ao resolver (app React)
+
+**O atrito:** a aba **Workflow** (`WorkflowView`) é um fluxograma grande e pannável da árvore de
+decisão do Simplex Duas Fases. Ao clicar "Resolver pelo workflow", o caminho do problema **acende
+nó a nó** — mas o canvas continuava na posição em que estava (zoom 0.7, scroll onde o usuário
+deixou). Em vários problemas o caminho aceso ficava **fora da viewport**, então o aluno via o
+mesmo fluxograma "apagado" e não percebia que algo acendeu. O item de auditoria "o caminho aceso
+está legível?" falhava por pura posição de scroll. (Os alvos óbvios dos quadros — React e legado —
+já estão cobertos por 8+ rodadas hoje; fui para uma área calma e ainda não auditada.)
+
+**O que mudou e onde (`src/components/WorkflowView.tsx`, componente `Canvas` — só apresentação):**
+- Novo `useEffect([trace])`: ao chegar um `trace` novo, calcula o **centro do bounding-box dos nós
+  ativos** (`FLOW_NODES.filter(activeNodes)`, posições estáticas) e dá `el.scrollTo` centralizando-o
+  na viewport (`cx*zoom − clientWidth/2`, idem vertical, com `Math.max(0, …)`). Depende **só de
+  `trace`** (rola ao resolver, não a cada zoom). Respeita `prefers-reduced-motion` (`behavior:'auto'`
+  vs `'smooth'`). Não recalcula matemática — lê posições do layout e o `activeNodes` que o motor produz.
+
+**Verificação:**
+- `npm run typecheck` → **0**. `npm test` → **43/43**. `npm run build` → **0** (só aviso de chunk).
+- Lógica conferida: o `scrollTo` usa `clientWidth/Height` do container `.wf-canvas` e o `zoom` atual;
+  caminho aceso (centro do bbox dos nós ativos) cai no centro da área visível. Efeito puramente de
+  scroll — pior caso, centraliza levemente fora; nunca quebra estado/correção.
+
+**Candidatas pra próxima rodada (backlog raso — ler aviso abaixo):**
+1. `FeasibleRegion` (React): realçar o vértice quando o quadro correspondente está em foco (hover compartilhado).
+2. Tornar a `TableauLegend` (React) colapsável (`<details>`, aberta por padrão) — valor baixo.
+3. Workflow: pequena **legenda das cores/kinds** dos nós — MAS hoje há descasamento `kind`↔CSS
+   (`flowTrace` usa `io/switch/case/process/end-bad/end-good`; CSS tem `.kind-start/phase1/phase2/end`
+   mortos). Limpar isso é `/saude-codigo`/`/cacar-bugs` antes de legendar.
+
+> **Saturação:** este foi um round "magro" — os alvos de quadro (React e legado) estão esgotados e
+> os restantes são de baixo valor ou colidem com sessões paralelas (o `styles.css` foi todo
+> redesenhado no meio das rodadas). Se a **próxima** rodada também não achar atrito que valha a pena,
+> **encerrar `/melhoria-didatica`** e migrar esforço para `/conteudo-pedagogico` ou `/cacar-bugs`
+> (regra de ouro 8: 2 rodadas magras seguidas ⇒ parar).
